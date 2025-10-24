@@ -141,7 +141,7 @@ _# Documento de Arquitetura de Software: Chat4All v2 (Continuação)_
 
 ## 12. Diagrama de Casos de Uso
 
-![Diagrama de Casos de Uso]()
+![Diagrama de Casos de Uso](Diagramas/diagrama_casos_de_uso.png)
 
 ## 13. Documentação dos Atores
 
