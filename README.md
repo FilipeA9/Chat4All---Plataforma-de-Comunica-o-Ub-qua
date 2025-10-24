@@ -258,7 +258,7 @@ Este diagrama oferece uma visão da arquitetura de alto nível, mostrando os pri
 
 Este diagrama detalha o fluxo de trabalho para o caso de uso principal: o envio de uma mensagem. Ele mostra os passos sequenciais e paralelos envolvidos no processamento de uma única requisição.
 
-![Diagrama de Atividade](digrama_atividade.png)
+![Diagrama de Atividade](diagrama_atividade.png)
 
 O fluxo destaca o desacoplamento entre a recepção da mensagem (síncrona e rápida) e seu processamento subsequente (assíncrono), que ocorre em paralelo para diferentes canais e notificações.
 
@@ -266,7 +266,7 @@ O fluxo destaca o desacoplamento entre a recepção da mensagem (síncrona e rá
 
 Este diagrama modela o ciclo de vida de uma mensagem, mostrando os diferentes estados pelos quais ela pode passar e as transições entre eles.
 
-![Diagrama de Estado](digrama_estado.png)
+![Diagrama de Estado](diagrama_estado.png)
 
 - **Sending:** Estado transitório inicial, enquanto a mensagem está sendo processada pelo frontend e publicada no broker.
 - **Sent:** A mensagem foi persistida com sucesso e enviada ao próximo hop (conector ou cliente interno).
