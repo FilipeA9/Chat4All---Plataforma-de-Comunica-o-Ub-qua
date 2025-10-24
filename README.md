@@ -227,7 +227,7 @@ _# Documento de Arquitetura de Software: Chat4All v2 (Continuação)_
 
 Este diagrama ilustra as principais entidades de domínio do sistema e seus relacionamentos. Ele serve como um modelo conceitual de alto nível para os dados que a plataforma manipula.
 
-![Diagrama de Classes de Análise]()
+![Diagrama de Classes de Análise](diagrama_classes_analise.png)
 
 - **Conversation:** Representa uma conversa, que pode ser `privada` ou em `grupo`. Contém uma lista de `membros` (usuários) e uma coleção de mensagens.
 - **Message:** A unidade fundamental de comunicação. Contém o remetente (`from`), os destinatários (`to`), o `payload` e o `status` atual.
@@ -241,7 +241,7 @@ Este diagrama ilustra as principais entidades de domínio do sistema e seus rela
 
 Este diagrama oferece uma visão da arquitetura de alto nível, mostrando os principais componentes de software e como eles interagem. Ele reflete a natureza distribuída e baseada em microserviços do sistema.
 
-![Diagrama de Componentes]()
+![Diagrama de Componentes](diagrama_componentes.png)
 
 - **API Gateway:** Ponto de entrada único para todas as requisições. Responsável por autenticação, rate limiting e terminação TLS.
 - **Frontend Service:** Serviço stateless que expõe os endpoints gRPC/REST. Valida as requisições e as transforma em eventos, publicando-os no Message Broker.
@@ -258,7 +258,7 @@ Este diagrama oferece uma visão da arquitetura de alto nível, mostrando os pri
 
 Este diagrama detalha o fluxo de trabalho para o caso de uso principal: o envio de uma mensagem. Ele mostra os passos sequenciais e paralelos envolvidos no processamento de uma única requisição.
 
-![Diagrama de Atividade]()
+![Diagrama de Atividade](digrama_atividade.png)
 
 O fluxo destaca o desacoplamento entre a recepção da mensagem (síncrona e rápida) e seu processamento subsequente (assíncrono), que ocorre em paralelo para diferentes canais e notificações.
 
@@ -266,7 +266,7 @@ O fluxo destaca o desacoplamento entre a recepção da mensagem (síncrona e rá
 
 Este diagrama modela o ciclo de vida de uma mensagem, mostrando os diferentes estados pelos quais ela pode passar e as transições entre eles.
 
-![Diagrama de Estado]()
+![Diagrama de Estado](digrama_estado.png)
 
 - **Sending:** Estado transitório inicial, enquanto a mensagem está sendo processada pelo frontend e publicada no broker.
 - **Sent:** A mensagem foi persistida com sucesso e enviada ao próximo hop (conector ou cliente interno).
@@ -278,7 +278,7 @@ Este diagrama modela o ciclo de vida de uma mensagem, mostrando os diferentes es
 
 Este diagrama fornece uma visão detalhada da interação entre os componentes ao longo do tempo para o cenário de envio de uma mensagem cross-platform. Ele é crucial para entender a ordem das chamadas de API e eventos, especialmente em um sistema distribuído e assíncrono.
 
-![Diagrama de Sequência]()
+![Diagrama de Sequência](diagrama_sequencia.png)
 
 O diagrama ilustra claramente a separação entre a requisição inicial do cliente, que é respondida rapidamente com um `202 Accepted`, e o processamento assíncrono subsequente pelo `Router Worker`, que lida com a persistência e o envio para a plataforma externa. Ele também mostra como as atualizações de status (como `DELIVERED`) chegam de forma assíncrona através de webhooks e são processadas para atualizar o estado da mensagem.
 
@@ -288,7 +288,7 @@ O diagrama ilustra claramente a separação entre a requisição inicial do clie
 
 O modelo de dados foi projetado para atender aos requisitos de alta escalabilidade, alta taxa de escrita e leituras eficientes para os padrões de acesso mais comuns em um sistema de mensagens. A persistência é dividida em dois domínios principais: o **Message Store**, otimizado para os dados de mensagens, e o **Metadata Store**, para dados relacionais e de configuração.
 
-![Modelo Entidade-Relacionamento]()
+![Modelo Entidade-Relacionamento](diagrama_banco_de_dados.png)
 
 ### Message Store (Cassandra / ScyllaDB)
 
