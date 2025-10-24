@@ -70,7 +70,7 @@ A comunicação digital moderna é fragmentada em diversas plataformas, forçand
 
 | Data | Participantes | Tópicos Discutidos | Resumo das Decisões |
 | :--- | :--- | :--- | :--- |
-| 17/10/2025 | Manus AI, Usuário | Análise do documento de requisitos do projeto. | Alinhamento sobre os 20 tópicos da documentação, confirmação do uso de gRPC e definição do plano de trabalho em fases. |
+| 17/10/2025 | Filipe, Amanda Guilherme | Análise do documento de requisitos do projeto. | Alinhamento sobre os 20 tópicos da documentação, confirmação do uso de gRPC e definição do plano de trabalho em fases. |
 
 ## 7. Requisitos do Usuário
 
