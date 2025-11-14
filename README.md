@@ -12,6 +12,135 @@
 
 Este documento descreve a arquitetura de software para o projeto **Chat4All v2**, uma plataforma de comunicação ubíqua de alta performance. O objetivo é fornecer uma visão clara e abrangente do design do sistema, suas decisões arquiteturais, componentes e interações. A plataforma foi projetada para ser altamente escalável, tolerante a falhas e extensível, suportando milhões de usuários e um grande volume de mensagens em múltiplos canais de comunicação, como WhatsApp, Instagram Direct, Messenger e Telegram. A comunicação com o sistema será realizada primariamente através de APIs REST e gRPC, garantindo flexibilidade para diferentes tipos de clientes (web, mobile, CLI).
 
+## Executando o Projeto com Docker Compose
+
+1. Certifique-se de ter o **Docker** e o **Docker Compose** instalados.
+2. No diretório raiz do repositório, execute:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+   O comando sobe os serviços de Zookeeper, Kafka, PostgreSQL, API e Worker. Logs estruturados (JSON) serão exibidos diretamente no terminal.
+
+3. Para encerrar o ambiente, utilize `Ctrl+C` e, em seguida, remova os contêineres com:
+
+   ```bash
+   docker-compose down
+   ```
+
+## Endpoints da API
+
+Todos os endpoints exigem autenticação via JWT com a chave secreta estática `chat4all-static-secret`. Gere um token válido (issuer `chat4all` e audience `chat4all`) utilizando, por exemplo, o snippet abaixo (requer [PyJWT](https://pyjwt.readthedocs.io/) – instale com `pip install pyjwt`):
+
+```bash
+python - <<'PY'
+import jwt, datetime
+secret = "chat4all-static-secret"
+payload = {
+    "sub": "developer@example.com",
+    "iss": "chat4all",
+    "aud": "chat4all",
+    "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+}
+print(jwt.encode(payload, secret, algorithm="HS256"))
+PY
+```
+
+Inclua o token no cabeçalho `Authorization: Bearer <token>`.
+
+### POST `/v1/messages`
+
+- **Descrição:** Recebe uma mensagem e publica no Kafka para processamento assíncrono.
+- **Corpo da requisição:**
+
+  ```json
+  {
+    "conversation_id": "12b2c7da-3af5-4f71-b7cc-2b57f2d858ce",
+    "from_user": "agent-007",
+    "payload": "Olá, mundo!",
+    "metadata": {
+      "channel": "whatsapp"
+    }
+  }
+  ```
+
+- **Resposta (202 Accepted):**
+
+  ```json
+  {
+    "conversation_id": "12b2c7da-3af5-4f71-b7cc-2b57f2d858ce",
+    "message_id": "f2d8bf1d-9c9a-4bbd-9c4e-672bbf3a6b4f",
+    "status": "accepted"
+  }
+  ```
+
+### GET `/v1/conversations/{id}/messages`
+
+- **Descrição:** Lista as mensagens persistidas para a conversa informada.
+- **Resposta (200 OK):**
+
+  ```json
+  {
+    "conversation_id": "12b2c7da-3af5-4f71-b7cc-2b57f2d858ce",
+    "messages": [
+      {
+        "conversation_id": "12b2c7da-3af5-4f71-b7cc-2b57f2d858ce",
+        "message_id": "f2d8bf1d-9c9a-4bbd-9c4e-672bbf3a6b4f",
+        "from_user": "agent-007",
+        "payload": "Olá, mundo!",
+        "status": "DELIVERED",
+        "metadata": {
+          "channel": "whatsapp"
+        },
+        "created_at": "2024-05-12T12:34:56Z"
+      }
+    ]
+  }
+  ```
+
+## Fluxo de Testes End-to-End
+
+1. Suba o ambiente com `docker-compose up --build`.
+2. Gere um token JWT válido (ver seção anterior) e exporte-o como variável de ambiente:
+
+   ```bash
+   export CHAT4ALL_TOKEN="<token>"
+   ```
+
+3. Envie uma mensagem:
+
+   ```bash
+   curl -i \
+     -H "Authorization: Bearer ${CHAT4ALL_TOKEN}" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "conversation_id": "12b2c7da-3af5-4f71-b7cc-2b57f2d858ce",
+           "from_user": "agent-007",
+           "payload": "Olá, mundo!",
+           "metadata": {"channel": "whatsapp"}
+         }' \
+     http://localhost:8080/v1/messages
+   ```
+
+4. Acompanhe os logs do worker no terminal para confirmar a simulação de entrega (status `DELIVERED`).
+5. Consulte o histórico de mensagens:
+
+   ```bash
+   curl -i \
+     -H "Authorization: Bearer ${CHAT4ALL_TOKEN}" \
+     http://localhost:8080/v1/conversations/12b2c7da-3af5-4f71-b7cc-2b57f2d858ce/messages
+   ```
+
+6. (Opcional) Acesse o banco PostgreSQL para validar os dados persistidos:
+
+   ```bash
+   docker exec -it chat4all---plataforma-de-comunicao-ubiqua-postgres-1 psql -U chat4all -d chat4all
+   SELECT * FROM messages ORDER BY created_at DESC;
+   ```
+
+As seções seguintes mantêm a documentação arquitetural original do projeto.
+
 ## 2. Convenções, Termos e Abreviações
 
 | Termo/Abreviação | Descrição |
